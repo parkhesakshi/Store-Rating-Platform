@@ -5,18 +5,18 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('dashboard')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
-
-  @Get('stats')
-  @Roles('ADMIN')
-  getStats() {
-    return this.dashboardService.getStats();
-  }
 
   @Get('public-stats')
   async getPublicStats() {
     return this.dashboardService.getPublicStats();
+  }
+
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  getStats() {
+    return this.dashboardService.getStats();
   }
 }
