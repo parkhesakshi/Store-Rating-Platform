@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search, ArrowUpDown, Eye } from "lucide-react";
 import { api } from "../services/api";
-import AddUserModal from "@/components/AddUserModal";
+import AddUserModal from "../components/AddUserModal";
 
 interface User {
   id: string;

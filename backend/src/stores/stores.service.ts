@@ -18,7 +18,11 @@ export class StoresService {
         name: createStoreDto.name,
         email: createStoreDto.email,
         address: createStoreDto.address,
-        ownerId: createStoreDto.ownerId,
+        owner: {
+          connect: {
+            id: createStoreDto.ownerId,
+          },
+        },
       },
     });
   }

@@ -44,6 +44,7 @@ const CreateStore: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: async (data: StoreFormData) => {
+      console.log(data);
       const response = await api.post("/stores", data);
       return response.data;
     },
