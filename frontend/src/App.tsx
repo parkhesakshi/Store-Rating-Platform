@@ -34,15 +34,9 @@ function App() {
           }
         >
           <Route
-            path="/storeowner-dashboard"
-            element={
-              <ProtectedRoute requiredRole="STORE_OWNER">
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<StoreOwnerDashboard />} />
-          </Route>
+            path="storeowner-dashboard"
+            element={<StoreOwnerDashboard />}
+          />
           <Route index element={<Dashboard />} />
 
           <Route path="stores" element={<Stores />} />

@@ -36,7 +36,7 @@ export default function Layout() {
       {
         label: "Dashboard",
         icon: LayoutDashboard,
-        path: "/owner-dashboard",
+        path: "/dashboard/storeowner-dashboard",
       },
     ];
   } else {
