@@ -80,7 +80,12 @@ const Users: React.FC = () => {
           <p className="text-gray-500">Total Users: {filteredUsers.length}</p>
         </div>
 
-        <button onClick={() => setShowAddUser(true)}>Add User</button>
+        <button
+          className="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+          onClick={() => setShowAddUser(true)}
+        >
+          Add User
+        </button>
       </div>
 
       {/* Search */}
