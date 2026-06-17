@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   Injectable,
   NotFoundException,
@@ -11,11 +12,13 @@ import { Role } from '@prisma/client';
 export class StoresService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createStoreDto: CreateStoreDto, ownerId: string) {
+  async create(createStoreDto: CreateStoreDto) {
     return this.prisma.store.create({
       data: {
-        ...createStoreDto,
-        ownerId,
+        name: createStoreDto.name,
+        email: createStoreDto.email,
+        address: createStoreDto.address,
+        ownerId: createStoreDto.ownerId,
       },
     });
   }
@@ -97,11 +100,7 @@ export class StoresService {
   }
 
   // eslint-disable-next-line prettier/prettier
-  async update(
-    id: string,
-    updateStoreDto: UpdateStoreDto,
-    userId: string,
-  ) {
+  async update(id: string, updateStoreDto: UpdateStoreDto, userId: string) {
     const store = await this.prisma.store.findUnique({
       where: { id },
     });
@@ -120,9 +119,7 @@ export class StoresService {
 
     if (store.ownerId !== userId && user.role !== Role.ADMIN) {
       // eslint-disable-next-line prettier/prettier
-      throw new ForbiddenException(
-        'You can only update your own store',
-      );
+      throw new ForbiddenException('You can only update your own store');
     }
 
     return this.prisma.store.update({
@@ -150,9 +147,7 @@ export class StoresService {
 
     if (store.ownerId !== userId && user.role !== Role.ADMIN) {
       // eslint-disable-next-line prettier/prettier
-      throw new ForbiddenException(
-       ` 'You can only delete your own store'`,
-      );
+      throw new ForbiddenException(` 'You can only delete your own store'`);
     }
 
     return this.prisma.store.delete({

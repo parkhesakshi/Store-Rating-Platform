@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, Request } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto, UpdateStoreDto } from './dto/store.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -13,7 +25,7 @@ export class StoresController {
   @Post()
   @Roles('ADMIN', 'STORE_OWNER')
   create(@Body() createStoreDto: CreateStoreDto, @Request() req) {
-    return this.storesService.create(createStoreDto, req.user.id);
+    return this.storesService.create(createStoreDto);
   }
 
   @Get()
@@ -28,7 +40,11 @@ export class StoresController {
 
   @Put(':id')
   @Roles('ADMIN', 'STORE_OWNER')
-  update(@Param('id') id: string, @Body() updateStoreDto: UpdateStoreDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateStoreDto: UpdateStoreDto,
+    @Request() req,
+  ) {
     return this.storesService.update(id, updateStoreDto, req.user.id);
   }
 

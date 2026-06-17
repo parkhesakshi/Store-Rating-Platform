@@ -1,42 +1,57 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { api } from '../services/api';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Label } from '../components/ui/Label';
-import { ArrowLeft } from 'lucide-react';
-import { getErrorMessage } from '../lib/error-handler';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { api } from "../services/api";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Label } from "../components/ui/Label";
+import { ArrowLeft } from "lucide-react";
+import { getErrorMessage } from "../lib/error-handler";
+import { useQuery } from "@tanstack/react-query";
 
 const storeSchema = z.object({
-  name: z.string().min(3, 'Name must be at least 3 characters').max(100),
-  email: z.string().email('Invalid email address'),
-  address: z.string().max(400, 'Address must be at most 400 characters'),
+  name: z.string().min(3).max(100),
+  email: z.string().email(),
+  address: z.string().max(400),
+  ownerId: z.string().min(1, "Select store owner"),
 });
 
 type StoreFormData = z.infer<typeof storeSchema>;
 
 const CreateStore: React.FC = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const { register, handleSubmit, formState: { errors } } = useForm<StoreFormData>({
+  const { data: owners = [] } = useQuery({
+    queryKey: ["storeOwners"],
+    queryFn: async () => {
+      const response = await api.get("/users/store-owners");
+      return response.data;
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<StoreFormData>({
     resolver: zodResolver(storeSchema),
   });
 
   const mutation = useMutation({
     mutationFn: async (data: StoreFormData) => {
-      const response = await api.post('/stores', data);
+      const response = await api.post("/stores", data);
       return response.data;
     },
     onSuccess: () => {
-      navigate('/dashboard/stores');
+      navigate("/dashboard/stores");
     },
     onError: (error) => {
-      setError(getErrorMessage(error, 'Failed to create store'));
+      setError(getErrorMessage(error, "Failed to create store"));
     },
   });
 
@@ -49,7 +64,7 @@ const CreateStore: React.FC = () => {
       <Button
         variant="outline"
         className="mb-6"
-        onClick={() => navigate('/stores')}
+        onClick={() => navigate("/stores")}
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Stores
@@ -69,7 +84,7 @@ const CreateStore: React.FC = () => {
             <Label htmlFor="name">Store Name</Label>
             <Input
               id="name"
-              {...register('name')}
+              {...register("name")}
               error={errors.name?.message}
               placeholder="Enter store name"
             />
@@ -80,7 +95,7 @@ const CreateStore: React.FC = () => {
             <Input
               id="email"
               type="email"
-              {...register('email')}
+              {...register("email")}
               error={errors.email?.message}
               placeholder="Enter store email"
             />
@@ -90,10 +105,33 @@ const CreateStore: React.FC = () => {
             <Label htmlFor="address">Store Address</Label>
             <Input
               id="address"
-              {...register('address')}
+              {...register("address")}
               error={errors.address?.message}
               placeholder="Enter store address (max 400 characters)"
             />
+          </div>
+          <div>
+            <Label htmlFor="ownerId">Store Owner</Label>
+
+            <select
+              id="ownerId"
+              {...register("ownerId")}
+              className="w-full border rounded-md px-3 py-2"
+            >
+              <option value="">Select Store Owner</option>
+
+              {owners.map((owner: any) => (
+                <option key={owner.id} value={owner.id}>
+                  {owner.name} ({owner.email})
+                </option>
+              ))}
+            </select>
+
+            {errors.ownerId && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.ownerId.message}
+              </p>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -101,7 +139,7 @@ const CreateStore: React.FC = () => {
               type="button"
               variant="outline"
               className="flex-1"
-              onClick={() => navigate('/dashboard/stores')}
+              onClick={() => navigate("/dashboard/stores")}
             >
               Cancel
             </Button>
@@ -110,7 +148,7 @@ const CreateStore: React.FC = () => {
               className="flex-1"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? 'Creating...' : 'Create Store'}
+              {mutation.isPending ? "Creating..." : "Create Store"}
             </Button>
           </div>
         </form>

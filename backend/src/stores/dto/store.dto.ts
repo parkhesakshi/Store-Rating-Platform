@@ -8,6 +8,8 @@ export class CreateStoreDto {
   @IsEmail()
   email: string;
 
+  ownerId: string;
+
   @IsString()
   @MaxLength(400)
   address: string;

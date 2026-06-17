@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -20,6 +30,11 @@ export class UsersController {
   @Roles('ADMIN')
   findAll(@Query('search') search?: string) {
     return this.usersService.findAll({ search });
+  }
+
+  @Get('store-owners')
+  getStoreOwners() {
+    return this.usersService.getStoreOwners();
   }
 
   @Get(':id')

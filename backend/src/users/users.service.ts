@@ -1,5 +1,9 @@
 // eslint-disable-next-line prettier/prettier
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
@@ -45,7 +49,7 @@ export class UsersService {
 
   async findAll(filters?: { search?: string }) {
     const where: any = {};
-    
+
     if (filters?.search) {
       where.OR = [
         { name: { contains: filters.search, mode: 'insensitive' } },
@@ -107,6 +111,19 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async getStoreOwners() {
+    return this.prisma.user.findMany({
+      where: {
+        role: 'STORE_OWNER',
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -193,9 +210,13 @@ export class UsersService {
     return users.map((user) => {
       const allRatings = user.stores.flatMap((store) => store.ratings);
       // eslint-disable-next-line prettier/prettier
-      const totalRating = allRatings.reduce((sum, rating) => sum + rating.score, 0);
+      const totalRating = allRatings.reduce(
+        (sum, rating) => sum + rating.score,
+        0,
+      );
       // eslint-disable-next-line prettier/prettier
-      const averageRating = allRatings.length > 0 ? totalRating / allRatings.length : 0;
+      const averageRating =
+        allRatings.length > 0 ? totalRating / allRatings.length : 0;
 
       return {
         ...user,
