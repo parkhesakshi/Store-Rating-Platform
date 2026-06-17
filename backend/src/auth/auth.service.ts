@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 // eslint-disable-next-line prettier/prettier
 import {
   Injectable,
@@ -9,6 +10,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { Role } from '@prisma/client';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
@@ -81,13 +83,24 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new NotFoundException('User not found');
     }
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    const isCurrentPasswordValid = await bcrypt.compare(
+      oldPassword,
+      user.password,
+    );
 
-    if (!isMatch) {
-      throw new UnauthorizedException('Old password is incorrect');
+    if (!isCurrentPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+
+    if (isSamePassword) {
+      throw new BadRequestException(
+        'New password cannot be the same as current password',
+      );
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

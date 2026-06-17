@@ -11,11 +11,7 @@ import {
 
 import { AuthService } from './auth.service';
 
-import {
-  RegisterDto,
-  LoginDto,
-  ChangePasswordDto,
-} from './dto/auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto } from './dto/auth.dto';
 
 import { JwtAuthGuard } from './jwt-auth.guard';
 
@@ -34,11 +30,14 @@ export class AuthController {
   }
   @Put('change-password')
   @UseGuards(JwtAuthGuard)
-  changePassword(@Request() req, @Body() body: ChangePasswordDto) {
+  async changePassword(
+    @Request() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
     return this.authService.changePassword(
       req.user.id,
-      body.oldPassword,
-      body.newPassword,
+      changePasswordDto.oldPassword,
+      changePasswordDto.newPassword,
     );
   }
 }
