@@ -33,7 +33,7 @@ const CreateStore: React.FC = () => {
       return response.data;
     },
     onSuccess: () => {
-      navigate('/stores');
+      navigate('/dashboard/stores');
     },
     onError: (error) => {
       setError(getErrorMessage(error, 'Failed to create store'));
@@ -101,7 +101,7 @@ const CreateStore: React.FC = () => {
               type="button"
               variant="outline"
               className="flex-1"
-              onClick={() => navigate('/stores')}
+              onClick={() => navigate('/dashboard/stores')}
             >
               Cancel
             </Button>

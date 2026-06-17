@@ -2,14 +2,7 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
-import {
-  LayoutDashboard,
-  Store,
-  Users,
-  Menu,
-  X,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, Store, Users, Menu, X, LogOut } from "lucide-react";
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -17,29 +10,44 @@ export default function Layout() {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
-
-  const menuItems = [
-    {
-      label: "Dashboard",
-      icon: LayoutDashboard,
-      path: "/dashboard",
-    },
-
-    {
-      label: "Stores",
-      icon: Store,
-      path: "/dashboard/stores",
-    },
-  ];
+  // eslint-disable-next-line no-useless-assignment
+  let menuItems = [];
 
   if (user?.role === "ADMIN") {
-    menuItems.push({
-      label: "Users",
-      icon: Users,
-      path: "/dashboard/users",
-    });
+    menuItems = [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/dashboard",
+      },
+      {
+        label: "Stores",
+        icon: Store,
+        path: "/dashboard/stores",
+      },
+      {
+        label: "Users",
+        icon: Users,
+        path: "/dashboard/users",
+      },
+    ];
+  } else if (user?.role === "STORE_OWNER") {
+    menuItems = [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/owner-dashboard",
+      },
+    ];
+  } else {
+    menuItems = [
+      {
+        label: "Stores",
+        icon: Store,
+        path: "/dashboard/stores",
+      },
+    ];
   }
-
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -50,9 +58,7 @@ export default function Layout() {
       {/* Mobile Header */}
 
       <div className="lg:hidden bg-white shadow px-4 py-4 flex justify-between items-center">
-        <h2 className="font-bold text-xl text-indigo-600">
-          StoreRating
-        </h2>
+        <h2 className="font-bold text-xl text-indigo-600">StoreRating</h2>
 
         <button onClick={() => setOpen(true)}>
           <Menu />
@@ -65,9 +71,7 @@ export default function Layout() {
         <div className="fixed inset-0 z-50 bg-black/50 lg:hidden">
           <div className="w-72 h-full bg-white p-6">
             <div className="flex justify-between mb-8">
-              <h2 className="font-bold text-xl">
-                StoreRating
-              </h2>
+              <h2 className="font-bold text-xl">StoreRating</h2>
 
               <button onClick={() => setOpen(false)}>
                 <X />
@@ -102,9 +106,7 @@ export default function Layout() {
 
         <aside className="hidden lg:flex flex-col w-72 bg-white shadow min-h-screen">
           <div className="p-6 border-b">
-            <h1 className="font-bold text-2xl text-indigo-600">
-              StoreRating
-            </h1>
+            <h1 className="font-bold text-2xl text-indigo-600">StoreRating</h1>
           </div>
 
           <div className="flex-1 p-4">
@@ -123,9 +125,7 @@ export default function Layout() {
           <div className="p-4 border-t">
             <p className="font-medium">{user?.name}</p>
 
-            <p className="text-sm text-gray-500 mb-4">
-              {user?.role}
-            </p>
+            <p className="text-sm text-gray-500 mb-4">{user?.role}</p>
 
             <button
               onClick={handleLogout}

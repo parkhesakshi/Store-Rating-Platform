@@ -5,6 +5,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import StoreOwnerDashboard from "./pages/StoreOwnerDashboard";
 
 import Dashboard from "./pages/Dashboard";
 import Stores from "./pages/Stores";
@@ -18,7 +19,6 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-
         <Route path="/" element={<Landing />} />
 
         <Route path="/login" element={<Login />} />
@@ -33,6 +33,16 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route
+            path="/storeowner-dashboard"
+            element={
+              <ProtectedRoute requiredRole="STORE_OWNER">
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<StoreOwnerDashboard />} />
+          </Route>
           <Route index element={<Dashboard />} />
 
           <Route path="stores" element={<Stores />} />
