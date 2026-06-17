@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search, ArrowUpDown, Eye } from "lucide-react";
@@ -19,9 +19,20 @@ const Users: React.FC = () => {
   const [showAddUser, setShowAddUser] = useState(false);
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [searchField, setSearchField] = useState<keyof User>("name");
   const [sortField, setSortField] = useState<keyof User>("name");
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const { data: users = [], isLoading } = useQuery<User[]>({
     queryKey: ["users"],
@@ -40,26 +51,29 @@ const Users: React.FC = () => {
     }
   };
 
-  const filteredUsers = users.filter((user) => {
-    const searchTerm = search.toLowerCase();
+  const filteredUsers = useMemo(() => {
+    const searchValue = debouncedSearch.toLowerCase().trim();
 
-    return (
-      user.name?.toLowerCase().includes(searchTerm) ||
-      user.email?.toLowerCase().includes(searchTerm) ||
-      user.address?.toLowerCase().includes(searchTerm) ||
-      user.role?.toLowerCase().includes(searchTerm)
+    if (!searchValue) return users;
+
+    return users.filter((user) =>
+      String(user[searchField] || "")
+        .toLowerCase()
+        .includes(searchValue),
     );
-  });
+  }, [users, debouncedSearch, searchField]);
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    const aValue = String(a[sortField] || "").toLowerCase();
+  const sortedUsers = useMemo(() => {
+    return [...filteredUsers].sort((a, b) => {
+      const aValue = String(a[sortField] || "").toLowerCase();
 
-    const bValue = String(b[sortField] || "").toLowerCase();
+      const bValue = String(b[sortField] || "").toLowerCase();
 
-    return sortOrder === "asc"
-      ? aValue.localeCompare(bValue)
-      : bValue.localeCompare(aValue);
-  });
+      return sortOrder === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    });
+  }, [filteredUsers, sortField, sortOrder]);
 
   if (isLoading) {
     return (
@@ -90,16 +104,31 @@ const Users: React.FC = () => {
 
       {/* Search */}
 
-      <div className="relative mb-6">
-        <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="sm:w-52">
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value as keyof User)}
+            className="w-full border rounded-lg px-3 py-3 bg-white shadow-sm"
+          >
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+            <option value="address">Address</option>
+            <option value="role">Role</option>
+          </select>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Search by name, email, address or role..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full border rounded-lg pl-10 pr-4 py-3 bg-white shadow-sm"
-        />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+
+          <input
+            type="text"
+            placeholder={`Search by ${searchField}...`}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border rounded-lg pl-10 pr-4 py-3 bg-white shadow-sm"
+          />
+        </div>
       </div>
 
       {/* Desktop Table */}

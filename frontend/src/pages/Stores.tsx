@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-import { Star, Search } from "lucide-react";
+import { Star } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { getErrorMessage } from "../lib/error-handler";
 
@@ -26,30 +26,33 @@ interface Store {
 const Stores: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchType, setSearchType] = useState<"name" | "address">("name");
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const {
     data: stores,
-    refetch,
     isLoading,
     error,
   } = useQuery<Store[]>({
-    queryKey: ["stores", searchTerm, searchType],
+    queryKey: ["stores", debouncedSearch, searchType],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (searchTerm) {
+      if (debouncedSearch.trim()) {
         params.append(searchType, searchTerm);
       }
       const response = await api.get(`/stores?${params.toString()}`);
       return response.data;
     },
   });
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    refetch();
-  };
 
   const renderStars = (rating: number = 0) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -93,7 +96,7 @@ const Stores: React.FC = () => {
         )}
       </div>
 
-      <form onSubmit={handleSearch} className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6">
         <div className="flex-1">
           <Input
             placeholder="Search stores..."
@@ -106,14 +109,14 @@ const Stores: React.FC = () => {
           onChange={(e) => setSearchType(e.target.value as "name" | "address")}
           className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="name">By Name</option>
-          <option value="address">By Address</option>
+          <option className="font-normal" value="name">
+            By Name
+          </option>
+          <option className="font-normal" value="address">
+            By Address
+          </option>
         </select>
-        <Button type="submit">
-          <Search className="h-4 w-4 mr-2" />
-          Search
-        </Button>
-      </form>
+      </div>
 
       {stores && stores.length === 0 ? (
         <div className="text-center py-12">
