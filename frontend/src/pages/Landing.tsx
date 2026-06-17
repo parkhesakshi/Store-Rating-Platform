@@ -10,7 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-import HeroImage from "../assets/hero-image.jpg";
+import HeroImage from "../assets/Hero-image.jpg";
 
 const Landing = () => {
   
