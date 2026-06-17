@@ -8,6 +8,7 @@ export class CreateStoreDto {
   @IsEmail()
   email: string;
 
+  @IsString()
   ownerId: string;
 
   @IsString()
