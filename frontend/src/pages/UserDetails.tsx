@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../services/api";
-import { Eye } from "lucide-react";
 
 export default function UserDetails() {
   const { id } = useParams();
@@ -63,15 +62,6 @@ export default function UserDetails() {
               <p>{user.store.name}</p>
             </div>
           )}
-          <td className="p-4">
-            <button
-              onClick={() => navigate(`/dashboard/users/${user.id}`)}
-              className="text-indigo-600 flex items-center gap-1"
-            >
-              <Eye size={16} />
-              View
-            </button>
-          </td>
         </div>
       </div>
     </div>
