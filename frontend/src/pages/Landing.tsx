@@ -76,7 +76,7 @@ const Landing = () => {
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
               <Users size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.users ?? 0}+`}+</h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.users ?? 0}+`}</h3>
 
               <p className="text-gray-500 mt-2">Active Users</p>
             </div>
@@ -84,7 +84,7 @@ const Landing = () => {
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
               <Store size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.stores ?? 0}+`}+</h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.stores ?? 0}+`}</h3>
 
               <p className="text-gray-500 mt-2">Registered Stores</p>
             </div>
@@ -92,7 +92,7 @@ const Landing = () => {
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
               <Star size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.ratings ?? 0}+`}+</h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.ratings ?? 0}+`}</h3>
 
               <p className="text-gray-500 mt-2">Ratings Submitted</p>
             </div>
