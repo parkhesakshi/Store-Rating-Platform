@@ -14,4 +14,9 @@ export class DashboardController {
   getStats() {
     return this.dashboardService.getStats();
   }
+
+  @Get('public-stats')
+  async getPublicStats() {
+    return this.dashboardService.getPublicStats();
+  }
 }

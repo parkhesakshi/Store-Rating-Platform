@@ -11,7 +11,7 @@ import { Role } from '@prisma/client';
 
 export class RegisterDto {
   @IsString()
-  @MinLength(20)
+  @MinLength(10)
   @MaxLength(60)
   name!: string;
 

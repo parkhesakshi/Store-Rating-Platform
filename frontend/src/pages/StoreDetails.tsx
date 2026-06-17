@@ -98,7 +98,7 @@ const StoreDetails: React.FC = () => {
         <Button
           variant="outline"
           className="mt-4"
-          onClick={() => navigate('/stores')}
+          onClick={() => navigate('/dashboard/stores')}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Stores
@@ -112,7 +112,7 @@ const StoreDetails: React.FC = () => {
       <Button
         variant="outline"
         className="mb-6"
-        onClick={() => navigate('/stores')}
+        onClick={() => navigate('/dashboard/stores')}
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Stores

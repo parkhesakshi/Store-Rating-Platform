@@ -18,4 +18,22 @@ export class DashboardService {
       totalRatings,
     };
   }
+
+  async getPublicStats() {
+    const users = await this.prisma.user.count({
+      where: {
+        role: 'USER',
+      },
+    });
+
+    const stores = await this.prisma.store.count();
+
+    const ratings = await this.prisma.rating.count();
+
+    return {
+      users,
+      stores,
+      ratings,
+    };
+  }
 }

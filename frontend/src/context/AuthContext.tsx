@@ -1,14 +1,20 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { AxiosError } from 'axios';
-import { api } from '../services/api';
-import type { User, LoginCredentials, RegisterData } from '../types';
-import { getErrorMessage } from '../lib/error-handler';
-import { AppError } from '../lib/custom-error';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import { AxiosError } from "axios";
+import { api } from "../services/api";
+import type { User, LoginCredentials, RegisterData } from "../types";
+import { getErrorMessage } from "../lib/error-handler";
+import { AppError } from "../lib/custom-error";
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
@@ -17,7 +23,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,23 +33,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     isMounted.current = true;
-    
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
+
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as User;
         setToken(storedToken);
         setUser(parsedUser);
-        api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
       } catch (error) {
-        console.error('Failed to parse stored user:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.error("Failed to parse stored user:", error);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
-    
+
     if (isMounted.current) {
       setIsLoading(false);
     }
@@ -51,50 +59,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (credentials: LoginCredentials): Promise<void> => {
-    try {
-      const response = await api.post('/auth/login', credentials);
-      const { user, token } = response.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      setUser(user);
-      setToken(token);
-    } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Login failed');
-      
-      if (error instanceof AxiosError) {
-        throw new AppError(errorMessage, {
-          statusCode: error.response?.status,
-          responseData: error.response?.data,
-          originalError: error,
-        });
-      }
-      
+const login = async (
+  credentials: LoginCredentials
+): Promise<User> => {
+  try {
+    const response = await api.post("/auth/login", credentials);
+
+    const { user, token } = response.data;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    api.defaults.headers.common["Authorization"] =
+      `Bearer ${token}`;
+
+    setUser(user);
+    setToken(token);
+
+    return user;
+  } catch (error) {
+    const errorMessage = getErrorMessage(
+      error,
+      "Login failed"
+    );
+
+    if (error instanceof AxiosError) {
       throw new AppError(errorMessage, {
+        statusCode: error.response?.status,
+        responseData: error.response?.data,
         originalError: error,
       });
     }
-  };
+
+    throw new AppError(errorMessage, {
+      originalError: error,
+    });
+  }
+};
 
   const register = async (data: RegisterData): Promise<void> => {
     try {
-      const response = await api.post('/auth/register', data);
+      const response = await api.post("/auth/register", data);
       const { user, token } = response.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       setUser(user);
       setToken(token);
     } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Registration failed');
-      
+      const errorMessage = getErrorMessage(error, "Registration failed");
+
       if (error instanceof AxiosError) {
         throw new AppError(errorMessage, {
           statusCode: error.response?.status,
@@ -102,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           originalError: error,
         });
       }
-      
+
       throw new AppError(errorMessage, {
         originalError: error,
       });
@@ -110,19 +127,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = (): void => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    delete api.defaults.headers.common['Authorization'];
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    delete api.defaults.headers.common["Authorization"];
     setUser(null);
     setToken(null);
   };
 
-  const changePassword = async (oldPassword: string, newPassword: string): Promise<void> => {
+  const changePassword = async (
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<void> => {
     try {
-      await api.post('/auth/change-password', { oldPassword, newPassword });
+      await api.post("/auth/change-password", { oldPassword, newPassword });
     } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Password change failed');
-      
+      const errorMessage = getErrorMessage(error, "Password change failed");
+
       if (error instanceof AxiosError) {
         throw new AppError(errorMessage, {
           statusCode: error.response?.status,
@@ -130,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           originalError: error,
         });
       }
-      
+
       throw new AppError(errorMessage, {
         originalError: error,
       });
@@ -138,15 +158,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      token, 
-      login, 
-      register, 
-      logout, 
-      changePassword,
-      isLoading 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        changePassword,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -155,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

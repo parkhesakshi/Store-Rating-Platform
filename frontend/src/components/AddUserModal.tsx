@@ -18,7 +18,7 @@ import { getErrorMessage } from '../lib/error-handler';
 
 const userSchema = z.object({
   name: z.string()
-    .min(20, 'Name must be at least 20 characters')
+    .min(10, 'Name must be at least 20 characters')
     .max(60, 'Name must be at most 60 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string()

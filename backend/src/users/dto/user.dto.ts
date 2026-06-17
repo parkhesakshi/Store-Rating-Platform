@@ -2,7 +2,7 @@ import { IsEmail, IsString, MinLength, MaxLength, Matches, IsOptional, IsIn } fr
 
 export class CreateUserDto {
   @IsString()
-  @MinLength(20)
+  @MinLength(10)
   @MaxLength(60)
   name: string;
 
@@ -29,7 +29,7 @@ export class CreateUserDto {
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  @MinLength(20)
+  @MinLength(10)
   @MaxLength(60)
   name?: string;
 

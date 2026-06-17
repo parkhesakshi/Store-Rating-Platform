@@ -80,7 +80,7 @@ const Stores: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Stores</h1>
         {(user?.role === 'ADMIN' || user?.role === 'STORE_OWNER') && (
-          <Button onClick={() => navigate('/stores/new')}>
+          <Button onClick={() => navigate('/dashboard/stores/new')}>
             Add New Store
           </Button>
         )}
@@ -118,7 +118,7 @@ const Stores: React.FC = () => {
             <Card
               key={store.id}
               className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => navigate(`/stores/${store.id}`)}
+              onClick={() => navigate(`/dashboard/stores/${store.id}`)}
             >
               <div className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">

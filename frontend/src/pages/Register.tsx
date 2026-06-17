@@ -1,157 +1,218 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Label } from '../components/ui/Label';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+import { useAuth } from "../context/AuthContext";
+
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { Label } from "../components/ui/Label";
+
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/Select';
-import { getErrorMessage } from '../lib/error-handler';
+} from "../components/ui/Select";
+
+import { getErrorMessage } from "../lib/error-handler";
 
 const registerSchema = z.object({
-  name: z.string()
-    .min(20, 'Name must be at least 20 characters')
-    .max(60, 'Name must be at most 60 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(16, 'Password must be at most 16 characters')
-    .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*])/, 
-      'Password must contain at least one uppercase letter and one special character'),
-  address: z.string().max(400, 'Address must be at most 400 characters'),
-  role: z.enum(['USER', 'STORE_OWNER']).optional(),
+  name: z.string().min(10).max(60),
+  email: z.string().email(),
+  password: z
+    .string()
+    .min(8)
+    .max(16)
+    .regex(
+      /^(?=.*[A-Z])(?=.*[!@#$%^&*])/,
+      "Password must contain uppercase and special character"
+    ),
+  address: z.string().min(5).max(400),
+  role: z.enum(["USER", "STORE_OWNER"]),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register: React.FC = () => {
-  const { register: registerUser } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<RegisterFormData>({
+  const { register: registerUser } = useAuth();
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+
     defaultValues: {
-      role: 'USER',
+      role: "USER",
     },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (
+    data: RegisterFormData
+  ) => {
     try {
-      setIsLoading(true);
-      setError('');
+      setLoading(true);
+      setError("");
+
       await registerUser(data);
-      navigate('/');
-    } catch (err: unknown) {
-      setError(getErrorMessage(err, 'Registration failed. Please try again.'));
+
+      navigate("/login");
+    } catch (err) {
+      setError(
+        getErrorMessage(
+          err,
+          "Registration failed"
+        )
+      );
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-              sign in to your existing account
-            </Link>
+    <div className="h-screen grid lg:grid-cols-2 overflow-hidden bg-slate-50">
+
+      <div className="hidden lg:flex bg-indigo-600 items-center justify-center text-white p-12">
+        <div className="max-w-md">
+          <h1 className="text-5xl font-bold mb-6">
+            Join StoreRating
+          </h1>
+
+          <p className="text-lg text-indigo-100">
+            Discover stores and share your experience.
           </p>
         </div>
+      </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex items-center justify-center px-6 py-12">
+
+        <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl p-8">
+
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold">
+              Create Account
+            </h2>
+
+            <p className="text-slate-500">
+              Get started today
+            </p>
+          </div>
+
           {error && (
-            <div className="rounded-md bg-red-50 p-4" role="alert">
-              <div className="text-sm text-red-700">{error}</div>
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+              {error}
             </div>
           )}
 
-          <div className="space-y-4">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5"
+          >
             <div>
-              <Label htmlFor="name">Full Name</Label>
+              <Label>Name</Label>
+
               <Input
-                id="name"
-                {...register('name')}
+                {...register("name")}
+                placeholder="Full Name"
                 error={errors.name?.message}
-                placeholder="Enter full name (20-60 characters)"
-                autoComplete="name"
               />
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address</Label>
+              <Label>Email</Label>
+
               <Input
-                id="email"
                 type="email"
-                {...register('email')}
+                {...register("email")}
+                placeholder="Email Address"
                 error={errors.email?.message}
-                placeholder="Enter email address"
-                autoComplete="email"
               />
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label>Password</Label>
+
               <Input
-                id="password"
                 type="password"
-                {...register('password')}
+                {...register("password")}
+                placeholder="Password"
                 error={errors.password?.message}
-                placeholder="8-16 chars, uppercase & special char"
-                autoComplete="new-password"
               />
             </div>
 
             <div>
-              <Label htmlFor="address">Address</Label>
+              <Label>Address</Label>
+
               <Input
-                id="address"
-                {...register('address')}
+                {...register("address")}
+                placeholder="Address"
                 error={errors.address?.message}
-                placeholder="Enter address (max 400 characters)"
-                autoComplete="street-address"
               />
             </div>
 
             <div>
-              <Label htmlFor="role">Register as</Label>
-              <Select 
-                onValueChange={(value) => setValue('role', value as 'USER' | 'STORE_OWNER')}
+              <Label>Role</Label>
+
+              <Select
                 defaultValue="USER"
+                onValueChange={(value) =>
+                  setValue(
+                    "role",
+                    value as
+                      | "USER"
+                      | "STORE_OWNER"
+                  )
+                }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
+                  <SelectValue />
                 </SelectTrigger>
+
                 <SelectContent>
-                  <SelectItem value="USER">Normal User</SelectItem>
-                  <SelectItem value="STORE_OWNER">Store Owner</SelectItem>
+                  <SelectItem value="USER">
+                    Normal User
+                  </SelectItem>
+
+                  <SelectItem value="STORE_OWNER">
+                    Store Owner
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating account...' : 'Create Account'}
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading
+                ? "Creating Account..."
+                : "Create Account"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm mt-6 text-slate-600">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-indigo-600 font-medium"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
