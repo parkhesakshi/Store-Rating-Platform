@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { CreateRatingDto, UpdateRatingDto } from './dto/rating.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -14,8 +23,17 @@ export class RatingsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRatingDto: UpdateRatingDto,
+    @Request() req,
+  ) {
     return this.ratingsService.update(id, updateRatingDto.score, req.user.id);
+  }
+
+  @Get('storeowner-dashboard')
+  getStoreOwnerDashboard(@Request() req) {
+    return this.ratingsService.getStoreOwnerDashboard(req.user.id);
   }
 
   @Get('store/:storeId')

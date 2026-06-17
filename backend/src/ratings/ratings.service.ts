@@ -1,5 +1,10 @@
 // eslint-disable-next-line prettier/prettier
-import { Injectable, NotFoundException, ConflictException,ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRatingDto } from './dto/rating.dto';
 
@@ -81,11 +86,57 @@ export class RatingsService {
       orderBy: { createdAt: 'desc' },
     });
 
-    const average = ratings.length > 0
-      ? ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length
-      : 0;
+    const average =
+      ratings.length > 0
+        ? ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length
+        : 0;
 
     return { ratings, average, total: ratings.length };
+  }
+
+  async getStoreOwnerDashboard(userId: string) {
+    const store = await this.prisma.store.findFirst({
+      where: {
+        ownerId: userId,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException('No store assigned to this owner');
+    }
+
+    const ratings = await this.prisma.rating.findMany({
+      where: {
+        storeId: store.id,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            address: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const averageRating =
+      ratings.length > 0
+        ? ratings.reduce((sum, rating) => sum + rating.score, 0) /
+          ratings.length
+        : 0;
+
+    return {
+      storeId: store.id,
+      storeName: store.name,
+      averageRating,
+      totalRatings: ratings.length,
+      ratings,
+    };
   }
 
   async getUserRating(storeId: string, userId: string) {
