@@ -1,93 +1,51 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../services/api";
-import { Card } from "../components/ui/Card";
-import { Star, Users } from "lucide-react";
 
-interface RatedUser {
-  id: string;
-  name: string;
-  email: string;
-  rating: number;
-}
+const StoreOwnerDashboard = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["store-owner-dashboard"],
+    queryFn: async () => {
+      const response = await api.get(
+        "/store-owner/dashboard"
+      );
 
-interface OwnerDashboardData {
-  averageRating: number;
-  totalRatings: number;
-  ratedUsers: RatedUser[];
-}
-
-const OwnerDashboard = () => {
-  const { data, isLoading } =
-    useQuery<OwnerDashboardData>({
-      queryKey: ["storeowner-dashboard"],
-      queryFn: async () => {
-        const response = await api.get(
-          "/store-owner/dashboard"
-        );
-
-        return response.data;
-      },
-    });
+      return response.data;
+    },
+  });
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-10">
-        Loading Dashboard...
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-6">
         Store Owner Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <Card>
-          <div className="p-6">
-            <div className="flex items-center gap-4">
-              <Star
-                size={40}
-                className="text-yellow-500"
-              />
+      <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-gray-500">
+            Average Rating
+          </h2>
 
-              <div>
-                <p className="text-gray-500">
-                  Average Rating
-                </p>
+          <p className="text-4xl font-bold text-indigo-600 mt-2">
+            {data?.averageRating ?? 0}
+          </p>
+        </div>
 
-                <h2 className="text-3xl font-bold">
-                  {data?.averageRating ?? 0}
-                </h2>
-              </div>
-            </div>
-          </div>
-        </Card>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-gray-500">
+            Total Ratings
+          </h2>
 
-        <Card>
-          <div className="p-6">
-            <div className="flex items-center gap-4">
-              <Users
-                size={40}
-                className="text-indigo-600"
-              />
-
-              <div>
-                <p className="text-gray-500">
-                  Total Ratings
-                </p>
-
-                <h2 className="text-3xl font-bold">
-                  {data?.totalRatings ?? 0}
-                </h2>
-              </div>
-            </div>
-          </div>
-        </Card>
+          <p className="text-4xl font-bold text-indigo-600 mt-2">
+            {data?.totalRatings ?? 0}
+          </p>
+        </div>
       </div>
 
-      <Card>
+      <div className="bg-white rounded-lg shadow">
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4">
             Users Who Rated Your Store
@@ -111,30 +69,33 @@ const OwnerDashboard = () => {
             </thead>
 
             <tbody>
-              {data?.ratedUsers?.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-b"
-                >
-                  <td className="py-3">
-                    {user.name}
-                  </td>
+              {data?.ratings?.map(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (rating: any) => (
+                  <tr
+                    key={rating.id}
+                    className="border-b"
+                  >
+                    <td className="py-3">
+                      {rating.user.name}
+                    </td>
 
-                  <td className="py-3">
-                    {user.email}
-                  </td>
+                    <td className="py-3">
+                      {rating.user.email}
+                    </td>
 
-                  <td className="py-3">
-                    ⭐ {user.rating}
-                  </td>
-                </tr>
-              ))}
+                    <td className="py-3">
+                      ⭐ {rating.score}
+                    </td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
 
-export default OwnerDashboard;
+export default StoreOwnerDashboard;
