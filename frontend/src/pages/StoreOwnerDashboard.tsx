@@ -6,7 +6,7 @@ const StoreOwnerDashboard = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["storeowner-dashboard"],
     queryFn: async () => {
-      const res = await api.get("/ratings/owner-dashboard");
+      const res = await api.get("/ratings/storeowner-dashboard");
       return res.data;
     },
   });
