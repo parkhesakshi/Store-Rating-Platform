@@ -8,6 +8,11 @@ Frontend:  https://store-rating-platform-h7io.vercel.app/
 
 Backend API: https://store-rating-platform-cts4.onrender.com
 
+For testing purpose - Credentials of Admin:
+
+email: admin@storerating.com
+password: Admin@123
+
 ---
 
 ## 📌 Features
