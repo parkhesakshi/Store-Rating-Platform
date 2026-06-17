@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { api } from '../services/api';
-import { Input } from '../components/ui/Input';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Star, Search } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { getErrorMessage } from '../lib/error-handler';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { api } from "../services/api";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
+import { Star, Search } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { getErrorMessage } from "../lib/error-handler";
 
 interface Store {
   id: string;
@@ -26,11 +26,16 @@ interface Store {
 const Stores: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState<'name' | 'address'>('name');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchType, setSearchType] = useState<"name" | "address">("name");
 
-  const { data: stores, refetch, isLoading, error } = useQuery<Store[]>({
-    queryKey: ['stores', searchTerm, searchType],
+  const {
+    data: stores,
+    refetch,
+    isLoading,
+    error,
+  } = useQuery<Store[]>({
+    queryKey: ["stores", searchTerm, searchType],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) {
@@ -52,8 +57,8 @@ const Stores: React.FC = () => {
         key={i}
         className={`h-4 w-4 ${
           i < Math.round(rating)
-            ? 'fill-yellow-400 text-yellow-400'
-            : 'text-gray-300'
+            ? "fill-yellow-400 text-yellow-400"
+            : "text-gray-300"
         }`}
       />
     ));
@@ -70,7 +75,9 @@ const Stores: React.FC = () => {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-700">{getErrorMessage(error, 'Failed to load stores')}</p>
+        <p className="text-red-700">
+          {getErrorMessage(error, "Failed to load stores")}
+        </p>
       </div>
     );
   }
@@ -79,8 +86,8 @@ const Stores: React.FC = () => {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Stores</h1>
-        {(user?.role === 'ADMIN' || user?.role === 'STORE_OWNER') && (
-          <Button onClick={() => navigate('/dashboard/stores/new')}>
+        {(user?.role === "ADMIN" || user?.role === "STORE_OWNER") && (
+          <Button onClick={() => navigate("/dashboard/stores/new")}>
             Add New Store
           </Button>
         )}
@@ -96,7 +103,7 @@ const Stores: React.FC = () => {
         </div>
         <select
           value={searchType}
-          onChange={(e) => setSearchType(e.target.value as 'name' | 'address')}
+          onChange={(e) => setSearchType(e.target.value as "name" | "address")}
           className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="name">By Name</option>
@@ -126,13 +133,18 @@ const Stores: React.FC = () => {
                 </h3>
                 <p className="text-gray-600 text-sm mb-4">{store.address}</p>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="flex">{renderStars(store.averageRating || 0)}</div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {Number(store.averageRating || 0).toFixed(1)}
+                  </span>
+                  <div className="flex">
+                    {renderStars(store.averageRating || 0)}
+                  </div>
                   <span className="text-sm text-gray-500">
                     ({store.totalRatings || 0} ratings)
                   </span>
                 </div>
                 <div className="text-sm text-gray-500">
-                  Owner: {store.owner?.name || 'N/A'}
+                  Owner: {store.owner?.name || "N/A"}
                 </div>
               </div>
             </Card>
