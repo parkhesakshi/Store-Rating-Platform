@@ -1,10 +1,23 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Request,
+  UseGuards,
+  Put,
+} from '@nestjs/common';
+
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
-import { Put } from '@nestjs/common';
-import { Request } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
+
+import {
+  RegisterDto,
+  LoginDto,
+  ChangePasswordDto,
+} from './dto/auth.dto';
+
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
