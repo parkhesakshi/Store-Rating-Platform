@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../services/api";
 
@@ -55,7 +56,7 @@ const StoreOwnerDashboard = () => {
             </thead>
 
             <tbody>
-              {data?.ratings?.map((rating) => (
+              {data?.ratings?.map((rating: any) => (
                 <tr key={rating.id}>
                   <td className="p-4">{rating.user.name}</td>
 
