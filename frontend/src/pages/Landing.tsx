@@ -1,24 +1,26 @@
-import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../services/api";
 
-import {
-  Star,
-  Store,
-  Users,
-  BarChart3,
-  ArrowRight,
-} from "lucide-react";
+import { Star, Store, Users, BarChart3, ArrowRight } from "lucide-react";
 
 import HeroImage from "../assets/Hero-image.jpg";
 
 const Landing = () => {
-  
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["public-stats"],
+    queryFn: async () => {
+      const res = await api.get("/dashboard/public-stats");
+      return res.data;
+    },
+  });
   return (
     <>
       <Navbar />
 
- <section className="pt-32 lg:pt-40 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+      <section className="pt-32 lg:pt-40 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left */}
@@ -29,15 +31,13 @@ const Landing = () => {
 
               <h1 className="mt-8 text-5xl lg:text-7xl font-extrabold leading-tight">
                 Customer
-                <span className="block text-indigo-600">
-                  Reviews
-                </span>
+                <span className="block text-indigo-600">Reviews</span>
               </h1>
 
               <p className="mt-8 text-xl text-gray-600 leading-relaxed">
-                Discover trusted stores, share your experiences,
-                and help customers make smarter decisions with
-                authentic ratings and reviews.
+                Discover trusted stores, share your experiences, and help
+                customers make smarter decisions with authentic ratings and
+                reviews.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-5">
@@ -70,70 +70,41 @@ const Landing = () => {
       </section>
 
       {/* Stats */}
-      <section
-        id="stats"
-        className="py-24 bg-white"
-      >
+      <section id="stats" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-              <Users
-                size={50}
-                className="mx-auto text-indigo-600"
-              />
+              <Users size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">
-                10K+
-              </h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.users ?? 0}+`}+</h3>
 
-              <p className="text-gray-500 mt-2">
-                Active Users
-              </p>
+              <p className="text-gray-500 mt-2">Active Users</p>
             </div>
 
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-              <Store
-                size={50}
-                className="mx-auto text-indigo-600"
-              />
+              <Store size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">
-                500+
-              </h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.stores ?? 0}+`}+</h3>
 
-              <p className="text-gray-500 mt-2">
-                Registered Stores
-              </p>
+              <p className="text-gray-500 mt-2">Registered Stores</p>
             </div>
 
             <div className="bg-white rounded-3xl shadow-lg p-8 text-center">
-              <Star
-                size={50}
-                className="mx-auto text-indigo-600"
-              />
+              <Star size={50} className="mx-auto text-indigo-600" />
 
-              <h3 className="mt-4 text-4xl font-bold">
-                50K+
-              </h3>
+              <h3 className="mt-4 text-4xl font-bold">{isLoading ? "..." : `${stats?.ratings ?? 0}+`}+</h3>
 
-              <p className="text-gray-500 mt-2">
-                Ratings Submitted
-              </p>
+              <p className="text-gray-500 mt-2">Ratings Submitted</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section
-        id="features"
-        className="py-24 bg-slate-50"
-      >
+      <section id="features" className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="text-center">
-            <h2 className="text-5xl font-bold">
-              Why Choose StoreRating?
-            </h2>
+            <h2 className="text-5xl font-bold">Why Choose StoreRating?</h2>
 
             <p className="mt-4 text-gray-600 text-lg">
               Everything you need to discover and rate stores.
@@ -142,50 +113,32 @@ const Landing = () => {
 
           <div className="grid md:grid-cols-3 gap-10 mt-16">
             <div className="bg-white p-8 rounded-3xl shadow-md hover:shadow-xl transition">
-              <Star
-                size={50}
-                className="text-yellow-500"
-              />
+              <Star size={50} className="text-yellow-500" />
 
-              <h3 className="mt-5 text-2xl font-semibold">
-                Authentic Ratings
-              </h3>
+              <h3 className="mt-5 text-2xl font-semibold">Authentic Ratings</h3>
 
               <p className="mt-3 text-gray-600">
-                Genuine customer feedback and
-                trustworthy reviews.
+                Genuine customer feedback and trustworthy reviews.
               </p>
             </div>
 
             <div className="bg-white p-8 rounded-3xl shadow-md hover:shadow-xl transition">
-              <Store
-                size={50}
-                className="text-indigo-600"
-              />
+              <Store size={50} className="text-indigo-600" />
 
-              <h3 className="mt-5 text-2xl font-semibold">
-                Verified Stores
-              </h3>
+              <h3 className="mt-5 text-2xl font-semibold">Verified Stores</h3>
 
               <p className="mt-3 text-gray-600">
-                Browse trusted stores from various
-                categories.
+                Browse trusted stores from various categories.
               </p>
             </div>
 
             <div className="bg-white p-8 rounded-3xl shadow-md hover:shadow-xl transition">
-              <BarChart3
-                size={50}
-                className="text-green-600"
-              />
+              <BarChart3 size={50} className="text-green-600" />
 
-              <h3 className="mt-5 text-2xl font-semibold">
-                Smart Analytics
-              </h3>
+              <h3 className="mt-5 text-2xl font-semibold">Smart Analytics</h3>
 
               <p className="mt-3 text-gray-600">
-                Insights and statistics for better
-                decisions.
+                Insights and statistics for better decisions.
               </p>
             </div>
           </div>
@@ -200,8 +153,7 @@ const Landing = () => {
           </h2>
 
           <p className="mt-6 text-xl text-indigo-100">
-            Join thousands of users discovering trusted
-            stores every day.
+            Join thousands of users discovering trusted stores every day.
           </p>
 
           <Link
