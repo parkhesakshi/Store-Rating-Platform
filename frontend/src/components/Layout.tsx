@@ -38,6 +38,11 @@ export default function Layout() {
         icon: LayoutDashboard,
         path: "/dashboard/storeowner-dashboard",
       },
+      {
+        label: "Change Password",
+        icon: Users,
+        path: "/dashboard/change-password",
+      },
     ];
   } else {
     menuItems = [
@@ -45,6 +50,11 @@ export default function Layout() {
         label: "Stores",
         icon: Store,
         path: "/dashboard/stores",
+      },
+      {
+        label: "Change Password",
+        icon: Users,
+        path: "/dashboard/change-password",
       },
     ];
   }

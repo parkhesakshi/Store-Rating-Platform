@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, {
   createContext,
   useContext,
@@ -59,43 +60,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-const login = async (
-  credentials: LoginCredentials
-): Promise<User> => {
-  try {
-    const response = await api.post("/auth/login", credentials);
+  const login = async (credentials: LoginCredentials): Promise<User> => {
+    try {
+      const response = await api.post("/auth/login", credentials);
 
-    const { user, token } = response.data;
+      const { user, token } = response.data;
 
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-    api.defaults.headers.common["Authorization"] =
-      `Bearer ${token}`;
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-    setUser(user);
-    setToken(token);
+      setUser(user);
+      setToken(token);
 
-    return user;
-  } catch (error) {
-    const errorMessage = getErrorMessage(
-      error,
-      "Login failed"
-    );
+      return user;
+    } catch (error) {
+      const errorMessage = getErrorMessage(error, "Login failed");
 
-    if (error instanceof AxiosError) {
+      if (error instanceof AxiosError) {
+        throw new AppError(errorMessage, {
+          statusCode: error.response?.status,
+          responseData: error.response?.data,
+          originalError: error,
+        });
+      }
+
       throw new AppError(errorMessage, {
-        statusCode: error.response?.status,
-        responseData: error.response?.data,
         originalError: error,
       });
     }
-
-    throw new AppError(errorMessage, {
-      originalError: error,
-    });
-  }
-};
+  };
 
   const register = async (data: RegisterData): Promise<void> => {
     try {
@@ -139,7 +134,10 @@ const login = async (
     newPassword: string,
   ): Promise<void> => {
     try {
-      await api.post("/auth/change-password", { oldPassword, newPassword });
+      await api.put("/auth/change-password", {
+        oldPassword,
+        newPassword,
+      });
     } catch (error) {
       const errorMessage = getErrorMessage(error, "Password change failed");
 

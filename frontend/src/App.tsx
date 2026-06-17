@@ -6,6 +6,7 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import StoreOwnerDashboard from "./pages/StoreOwnerDashboard";
+import ChangePassword from "./pages/ChangePassword";
 
 import Dashboard from "./pages/Dashboard";
 import Stores from "./pages/Stores";
@@ -46,6 +47,8 @@ function App() {
           <Route path="stores/:id" element={<StoreDetails />} />
 
           <Route path="users" element={<Users />} />
+
+          <Route path="change-password" element={<ChangePassword />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
