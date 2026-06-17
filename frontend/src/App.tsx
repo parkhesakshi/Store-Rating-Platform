@@ -13,6 +13,7 @@ import Stores from "./pages/Stores";
 import StoreDetails from "./pages/StoreDetails";
 import CreateStore from "./pages/CreateStore";
 import Users from "./pages/Users";
+import UserDetails from "./pages/UserDetails";
 
 import Layout from "./components/Layout";
 
@@ -47,6 +48,8 @@ function App() {
           <Route path="stores/:id" element={<StoreDetails />} />
 
           <Route path="users" element={<Users />} />
+
+          <Route path="users/:id" element={<UserDetails />} />
 
           <Route path="change-password" element={<ChangePassword />} />
         </Route>
